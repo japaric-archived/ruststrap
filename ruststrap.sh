@@ -27,6 +27,11 @@ cd $HOME/toolchains/src
 git clone --recursive https://github.com/rust-lang/rust
 cd rust
 
+# Get information about HEAD
+HEAD_HASH=$(git rev-parse --short HEAD)
+HEAD_DATE=$(date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
+TARBALL=rust-${HEAD_DATE}-${HEAD_HASH}-arm-unknown-linux-gnueabihf.tar.gz
+
 # Configure Rust
 mkdir build
 cd build
@@ -34,33 +39,35 @@ mkdir -p $HOME/toolchains/var/lib
 mkdir $HOME/toolchains/etc
 ../configure \
     --prefix=$HOME/toolchains \
+    --localstatedir=$HOME/toolchains/var/lib \
+    --sysconfdir=$HOME/toolchains/etc \
     --build=x86_64-unknown-linux-gnu \
     --host=x86_64-unknown-linux-gnu \
-    --disable-llvm-assertions \
-    --target=x86_64-unknown-linux-gnu,arm-unknown-linux-gnueabihf \
-    --localstatedir=$HOME/toolchains/var/lib \
-    --sysconfdir=$HOME/toolchains/etc
+    --target=x86_64-unknown-linux-gnu,arm-unknown-linux-gnueabihf
 cd x86_64-unknown-linux-gnu
 find . -type d -exec mkdir -p ../arm-unknown-linux-gnueabihf/\{\} \;
 
 # Building cross LLVM
 cd $HOME/toolchains/src/rust/build/x86_64-unknown-linux-gnu/llvm
 $HOME/toolchains/src/rust/src/llvm/configure \
-    --enable-target=x86_64,arm \
+    --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
-    --disable-assertions \
+    --enable-assertions \
     --disable-docs \
     --enable-bindings=none \
     --disable-terminfo \
     --disable-zlib \
     --disable-libffi \
-    --with-python=/usr/bin/python2.7
+    --with-python=/usr/bin/python2.7 \
+    --build=x86_64-unknown-linux-gnu \
+    --host=x86_64-unknown-linux-gnu \
+    --target=x86_64-unknown-linux-gnu
 make -j$(nproc)
 cd $HOME/toolchains/src/rust/build/arm-unknown-linux-gnueabihf/llvm
 $HOME/toolchains/src/rust/src/llvm/configure \
-    --enable-target=arm \
+    --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
-    --disable-assertions \
+    --enable-assertions \
     --disable-docs \
     --enable-bindings=none \
     --disable-terminfo \
@@ -73,9 +80,9 @@ $HOME/toolchains/src/rust/src/llvm/configure \
 make -j$(nproc)
 
 # Enable llvm-config for the cross build
-cd $HOME/toolchains/src/rust/build/arm-unknown-linux-gnueabihf/llvm/Release/bin
+cd $HOME/toolchains/src/rust/build/arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin
 mv llvm-config llvm-config-arm
-ln -s ../../BuildTools/Release/bin/llvm-config
+ln -s ../../BuildTools/Release+Asserts/bin/llvm-config
 ./llvm-config --cxxflags
 
 # Making Rust Build System use our LLVM build
@@ -102,9 +109,9 @@ cd $HOME/toolchains/src/rust
 sed -i.bak 's/.*target_arch = .*//' src/etc/mklldeps.py
 
 cd $HOME/toolchains/src/rust/build
-arm-unknown-linux-gnueabihf/llvm/Release/bin/llvm-config --libs \
+arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin/llvm-config --libs \
     | tr '-' '\n' | sort > arm
-x86_64-unknown-linux-gnu/llvm/Release/bin/llvm-config --libs \
+x86_64-unknown-linux-gnu/llvm/Release+Asserts/bin/llvm-config --libs \
     | tr '-' '\n' | sort > x86
 diff arm x86 >/dev/null
 
@@ -137,6 +144,6 @@ mv lib/rustlib/arm-unknown-linux-gnueabihf/bin .
 cd lib
 for i in rustlib/arm-unknown-linux-gnueabihf/lib/*.so; do ln -s $i .; done
 cd ../
-tar cjf ../rust_arm-unknown-linux-gnueabihf_dist.tbz2 .
+tar czf ../${TARBALL} .
 
 echo Hooray!
