@@ -1,26 +1,49 @@
 # `ruststrap`
 
-Bootstrap an `arm-unknown-linux-gnueabihf` compiler
+Rust and Cargo for `arm-unknown-linux-gnueabihf`
 
-The produced compiler will run on ARM and will produce ARM binaries
+This repository contains the build scripts used to create rust and cargo
+nightlies. If you are looking for the nightlies, click the link below.
+
+# [Unofficial "nightlies"][nightlies]
+
+(Use at your own risk!)
+
+I plan to store the last three nightlies of rust and cargo.
+
+At the moment, I haven't setup automation yet, so I'm uploading the nightlies
+manually. For that reason, these nightlies won't match the exact commit hash of
+the official nightlies.
+
+# Test matrix
+
+(I've only done smoke testing at this point, but I'd like to run the full test
+suite at some point.)
+
+| Device/distribution | Debian (sid) | Arch   | Exherbo    |
+| ------------------- | :----------: | :----: | :--------: |
+| Beaglebone          | -            | OK     | -          |
+| Odroid XU           | OK           | OK     | See issues |
+
+# Building Rust
 
 You have two options:
 
-- If your ARM device is "fast" and has plenty of RAM, you can
-  [build rust using a stage-0 snapshot]
-- Otherwise, you should [cross bootstrap rust]
+- If your ARM device is "fast", has plenty of RAM (like 2GB), and you have
+  plenty of time you can [build rust using a stage-0 snapshot](#from-snapshot)
+- Otherwise, you should [cross bootstrap rust](#cross-bootstrap) (preferred)
 
-# cross bootstrap rust
+## Cross bootstrap
 
 Based on the blog post ["Cross bootstrapping Rust"][blog] by Riad Wahby.
 
-Last successful build: `rustc 0.12.0-pre (5d653c17a 2014-09-26 11:44:01 +0000)`
+Last successful build: See [nightlies]
 
-Produced compiler successfully tested on: Odroid-XU, Beaglebone
+Produced compiler successfully tested on: See [Test matrix](#test-matrix)
 
 This produces an ARM rust compiler on a x86_64 machine.
 
-## How-to
+### Instructions
 
 (Friendly advice: Don't execute bash scripts you haven't read)
 
@@ -43,14 +66,14 @@ The final product (compiler + libraries in a tarball) will be located at:
 
 `/mnt/ubuntu/root/toolchains/src/rust/build`
 
-# build rust using a stage-0 snapshot
+## From snapshot
 
 Successfully tested on a Odroid XU (quad core + 2G RAM)
 
 This is the process normally used to build Rust on a x86_64 machine, where the
 compiler is bootstrapped from a stage-0 snapshot. The problem is that the
 Rust team doesn't provide a stage-0 snapshot for ARM, so you'll have to use a
-[snapshot I've previously created][floorchan] (if you trust me).
+[snapshot I've previously created][nightlies].
 
 Apart from the snapshot, the Rust Build System needs minimal patching:
 
@@ -59,7 +82,7 @@ Apart from the snapshot, the Rust Build System needs minimal patching:
 
 The `rbs.patch` contains the necessary changes.
 
-## How-to
+### Instructions
 
 On an ARM device:
 
@@ -71,7 +94,13 @@ $ mkdir build && cd build
 $ ../configure && make -j$(nproc)
 ```
 
-# Create a stage-0 snapshot
+# Building cargo
+
+Last successful build: See [nightlies]
+
+See issues.
+
+# Build a stage-0 snapshot
 
 Last successful build: `2014-09-22 437179e`
 
@@ -105,10 +134,6 @@ The final product (stage-0 tarball) will be located at:
 
 `/mnt/debian/root/toolchains/src/rust/build`
 
-# TODO
-
-- Get cargo working on arm
-
 # License
 
 ruststrap (i.e. the script and patches) is licensed under the MIT license.
@@ -116,4 +141,4 @@ ruststrap (i.e. the script and patches) is licensed under the MIT license.
 See LICENSE-MIT for more details.
 
 [blog]: http://github.jfet.org/Rust_cross_bootstrapping.html
-[floorchan]: http://ftp.floorchan.org/mirror/stages/rust/
+[nightlies]: http://ftp.floorchan.org/mirror/stages/rust/
