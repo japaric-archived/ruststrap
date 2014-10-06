@@ -5,42 +5,37 @@
 # Based on the blog post "Cross bootstrapping Rust" by Riad Wahby
 # (http://github.jfet.org/Rust_cross_bootstrapping.html)
 
-# Tested on a freshly `debootstrap`ed Ubuntu 14.04 chroot
-# Last successful build: rustc 0.12.0-pre (4d69696ff 2014-09-24 20:35:52 +0000)
-# Produced compiler successfully tested on: Odroid-XU
+# Tested on Ubuntu 14.04 chroot
 
 set -e
 set -x
 
-# ARM cross-compiler
-apt-get update
-apt-get install -qq g++-arm-linux-gnueabihf
+# Fetch Rust (or update existing repository)
+apt-get update -qq
+apt-get install -qq git
+git clone --recursive https://github.com/rust-lang/rust && cd rust || \
+  cd rust && git pull
 
-# Rust dependencies
-apt-get install -qq curl file git python
-
-# Prepare build folder
-mkdir -p $HOME/toolchains/src
-cd $HOME/toolchains/src
-
-# Fetch Rust
-git clone --recursive https://github.com/rust-lang/rust
-cd rust
+# Optionally checkout older commit
+if [ ! -z $1  ]; then
+  git checkout $1
+fi
 
 # Get information about HEAD
 HEAD_HASH=$(git rev-parse --short HEAD)
 HEAD_DATE=$(date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
-TARBALL=rust-${HEAD_DATE}-${HEAD_HASH}-arm-unknown-linux-gnueabihf.tar.gz
+TARBALL=rust-${HEAD_DATE}-${HEAD_HASH}-arm-unknown-linux-gnueabihf
+
+# Install ARM cross-compiler
+apt-get install -qq g++-arm-linux-gnueabihf
+
+# Install Rust build dependencies
+apt-get install -qq curl file python
 
 # Configure Rust
 mkdir build
 cd build
-mkdir -p $HOME/toolchains/var/lib
-mkdir $HOME/toolchains/etc
 ../configure \
-    --prefix=$HOME/toolchains \
-    --localstatedir=$HOME/toolchains/var/lib \
-    --sysconfdir=$HOME/toolchains/etc \
     --build=x86_64-unknown-linux-gnu \
     --host=x86_64-unknown-linux-gnu \
     --target=x86_64-unknown-linux-gnu,arm-unknown-linux-gnueabihf
@@ -48,8 +43,8 @@ cd x86_64-unknown-linux-gnu
 find . -type d -exec mkdir -p ../arm-unknown-linux-gnueabihf/\{\} \;
 
 # Building cross LLVM
-cd $HOME/toolchains/src/rust/build/x86_64-unknown-linux-gnu/llvm
-$HOME/toolchains/src/rust/src/llvm/configure \
+cd /rust/build/x86_64-unknown-linux-gnu/llvm
+/rust/src/llvm/configure \
     --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
     --enable-assertions \
@@ -63,8 +58,8 @@ $HOME/toolchains/src/rust/src/llvm/configure \
     --host=x86_64-unknown-linux-gnu \
     --target=x86_64-unknown-linux-gnu
 make -j$(nproc)
-cd $HOME/toolchains/src/rust/build/arm-unknown-linux-gnueabihf/llvm
-$HOME/toolchains/src/rust/src/llvm/configure \
+cd /rust/build/arm-unknown-linux-gnueabihf/llvm
+/rust/src/llvm/configure \
     --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
     --enable-assertions \
@@ -80,23 +75,23 @@ $HOME/toolchains/src/rust/src/llvm/configure \
 make -j$(nproc)
 
 # Enable llvm-config for the cross build
-cd $HOME/toolchains/src/rust/build/arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin
+cd /rust/build/arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin
 mv llvm-config llvm-config-arm
 ln -s ../../BuildTools/Release+Asserts/bin/llvm-config
 ./llvm-config --cxxflags
 
 # Making Rust Build System use our LLVM build
-cd $HOME/toolchains/src/rust/build/
+cd /rust/build/
 chmod 0644 config.mk
 grep 'CFG_LLVM_[BI]' config.mk |                                          \
     sed 's/x86_64\(.\)unknown.linux.gnu/arm\1unknown\1linux\1gnueabihf/g' \
     >> config.mk
 
-cd $HOME/toolchains/src/rust
+cd /rust
 sed -i.bak 's/\([\t]*\)\(.*\$(MAKE).*\)/\1#\2/' mk/llvm.mk
 
 # Building a working librustc for the cross architecture
-cd $HOME/toolchains/src/rust
+cd /rust
 sed -i.bak \
     's/^CRATES := .*/TARGET_CRATES += $(HOST_CRATES)\nCRATES := $(TARGET_CRATES)/' \
     mk/crates.mk
@@ -105,10 +100,10 @@ sed -i.bak \
     mk/main.mk
 sed -i.bak 's/foreach host,$(CFG_HOST)/foreach host,$(CFG_TARGET)/' mk/rustllvm.mk
 
-cd $HOME/toolchains/src/rust
+cd /rust
 sed -i.bak 's/.*target_arch = .*//' src/etc/mklldeps.py
 
-cd $HOME/toolchains/src/rust/build
+cd /rust/build
 arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin/llvm-config --libs \
     | tr '-' '\n' | sort > arm
 x86_64-unknown-linux-gnu/llvm/Release+Asserts/bin/llvm-config --libs \
@@ -116,11 +111,11 @@ x86_64-unknown-linux-gnu/llvm/Release+Asserts/bin/llvm-config --libs \
 diff arm x86 >/dev/null
 
 # Build it, part 1
-cd $HOME/toolchains/src/rust/build
+cd /rust/build
 make -j$(nproc)
 
 # Build it, part 2
-cd $HOME/toolchains/src/rust/build
+cd /rust/build
 LD_LIBRARY_PATH=$PWD/x86_64-unknown-linux-gnu/stage2/lib/rustlib/x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH \
     ./x86_64-unknown-linux-gnu/stage2/bin/rustc --cfg stage2 -O --cfg rtopt                                    \
     -C linker=arm-linux-gnueabihf-g++ -C ar=arm-linux-gnueabihf-ar -C target-feature=+v6,+vfp2                 \
@@ -134,16 +129,18 @@ LD_LIBRARY_PATH=$PWD/x86_64-unknown-linux-gnu/stage2/lib/rustlib/x86_64-unknown-
     -o x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/bin/rustdoc --cfg rustdoc       \
     $PWD/../src/driver/driver.rs
 
-# Ship it!
-cd $HOME/toolchains/src/rust/build/
-mkdir -p cross-dist/lib/rustlib/arm-unknown-linux-gnueabihf
-cd cross-dist
-cp -R ../x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/* \
+# Ship it
+mkdir -p /dist/lib/rustlib/arm-unknown-linux-gnueabihf
+cd /dist
+cp -R /rust/build/x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/* \
     lib/rustlib/arm-unknown-linux-gnueabihf
 mv lib/rustlib/arm-unknown-linux-gnueabihf/bin .
 cd lib
-for i in rustlib/arm-unknown-linux-gnueabihf/lib/*.so; do ln -s $i .; done
-cd ../
-tar czf ../${TARBALL} .
-
-echo Hooray!
+for i in rustlib/arm-unknown-linux-gnueabihf/lib/*.so; do
+  ln -s $i .
+done
+cd ..
+tar czf ../${TARBALL}.tar.gz .
+cd ..
+RUST_HASH=$(sha1sum ${TARBALL}.tar.gz | cut -f 1 -d ' ')
+mv ${TARBALL}.tar.gz ${TARBALL}-${RUST_HASH}.tar.gz
