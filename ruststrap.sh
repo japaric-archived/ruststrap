@@ -10,6 +10,9 @@
 set -e
 set -x
 
+# Make sure timezone is UTC (just like bors)
+ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+
 # Fetch Rust (or update existing repository)
 apt-get update -qq
 apt-get install -qq git

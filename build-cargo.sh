@@ -7,6 +7,9 @@
 set -e
 set -x
 
+# Make sure timezone is UTC (just like bors)
+ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+
 # Update library paths
 ldconfig
 
