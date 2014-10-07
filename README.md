@@ -1,6 +1,8 @@
 # `ruststrap`
 
 Unofficial Rust and Cargo nightlies for `arm-unknown-linux-gnueabihf`
+(Specifically, the nightlies target the armv7l architecture. These nightlies
+*won't* work on armv6 processors like the Raspberry Pi)
 
 This repository contains the build scripts. If you are looking for the actual
 nightlies, see the links below.
