@@ -1,138 +1,61 @@
 # `ruststrap`
 
-Rust and Cargo for `arm-unknown-linux-gnueabihf`
+Unofficial Rust and Cargo nightlies for `arm-unknown-linux-gnueabihf`
 
-This repository contains the build scripts used to create rust and cargo
-nightlies. If you are looking for the nightlies, click the link below.
+This repository contains the build scripts. If you are looking for the actual
+nightlies, see the links below.
 
-# [Unofficial "nightlies"][nightlies]
+# Nightlies (Use at your own risk!)
 
-(Use at your own risk!)
+Nightly archive: [Rust][rust] and [Cargo][cargo]
 
-I plan to store the last three nightlies of rust and cargo.
+(I plan to host the last three nightlies)
 
-At the moment, I haven't setup automation yet, so I'm uploading the nightlies
-manually. For that reason, these nightlies won't match the exact commit hash of
-the official nightlies.
+## Installation
 
-# Test matrix
+Grab the tarball and extract it into `/usr/local`.
 
-(I've only done smoke testing at this point, but I'd like to run the full test
-suite at some point.)
+(That's enough for me, since my `/usr/local` is usually empty. If you need a
+more elaborate (un)installation method, feel free to open an issue)
+
+## Test matrix
+
+These are the results of smoke testing the nightlies on some devices I have at
+hand:
 
 | Device/distribution | Debian (sid) | Arch   | Exherbo    |
 | ------------------- | :----------: | :----: | :--------: |
 | Beaglebone          | -            | OK     | -          |
 | Odroid XU           | OK           | OK     | See issues |
 
-# Building Rust
+If you smoke test these nightlies in some other device, please send a PR to
+update this table.
 
-You have two options:
+Proper testing is WIP and is being tracked in these issues:
 
-- If your ARM device is "fast", has plenty of RAM (like 2GB), and you have
-  plenty of time you can [build rust using a stage-0 snapshot](#from-snapshot)
-- Otherwise, you should [cross bootstrap rust](#cross-bootstrap) (preferred)
+- Rust: Running the full test suite: See [#5][test-rust]
+- Cargo: Test suite doesn't pass on the Odroid XU: See [#10][test-cargo]
 
-## Cross bootstrap
+# Automation
 
-Based on the blog post ["Cross bootstrapping Rust"][blog] by Riad Wahby.
+The build process is fully automated. Builds are triggered at the same time the
+official nightlies are built. Therefore both (official and unofficial)
+nightlies should have the same commit hash.
 
-Last successful build: See [nightlies]
+## How is the Rust nightly built?
 
-Produced compiler successfully tested on: See [Test matrix](#test-matrix)
+The Rust compiler + libraries are [cross bootstrapped][ruststrap] on a x86_64
+machine, therefore the test suite is *not* executed.
 
-This produces an ARM rust compiler on a x86_64 machine.
+## How is the Cargo nightly built?
 
-### Instructions
+Cargo is [bootstrapped][build-cargo] on an ARM device, and although the test
+suite can be executed, it's currently skipped because is [failing][test-cargo].
 
-(Friendly advice: Don't execute bash scripts you haven't read)
+# Acknowledgment
 
-(Note: I've decided to use an Ubuntu chroot for reproducibility purposes, and
-also because the chroot can be easily removed afterwards)
-
-On a x86_64 machine:
-
-```
-$ sudo su
-$ cd /mnt
-$ debootstrap --variant=buildd --arch=amd64 trusty ubuntu http://archive.ubuntu.com/ubuntu/
-$ cd ubuntu && systemd-nspawn
-> apt-get update && apt-get -qq install curl
-> curl -s https://raw.githubusercontent.com/japaric/ruststrap/master/ruststrap.sh | sh
-> logout
-```
-
-The final product (compiler + libraries in a tarball) will be located at:
-
-`/mnt/ubuntu/root/toolchains/src/rust/build`
-
-## From snapshot
-
-Successfully tested on a Odroid XU (quad core + 2G RAM)
-
-This is the process normally used to build Rust on a x86_64 machine, where the
-compiler is bootstrapped from a stage-0 snapshot. The problem is that the
-Rust team doesn't provide a stage-0 snapshot for ARM, so you'll have to use a
-[snapshot I've previously created][nightlies].
-
-Apart from the snapshot, the Rust Build System needs minimal patching:
-
-- Add an "arm-linux" entry to `snapshot.txt`
-- Modify "get-snapshot.py" to download the unofficial snapshot
-
-The `rbs.patch` contains the necessary changes.
-
-### Instructions
-
-On an ARM device:
-
-```
-$ git clone --recursive https://github.com/rust-lang/rust
-$ cd rust
-$ curl -s https://raw.githubusercontent.com/japaric/ruststrap/master/rbs.patch | patch -p1
-$ mkdir build && cd build
-$ ../configure && make -j$(nproc)
-```
-
-# Building cargo
-
-Last successful build: See [nightlies]
-
-See issues.
-
-# Build a stage-0 snapshot
-
-Last successful build: `2014-09-22 437179e`
-
-This is how I built the first stage-0 snapshot and is kept here for historical
-reasons
-
-## How-to
-
-On an ARM device:
-
-```
-$ sudo su
-$ cd /mnt
-$ debootstrap --variant=buildd --arch=armhf sid debian
-$ cd debian/root
-$ cp $CROSS_BOOTSTRAPPED_RUSTC_TARBALL .
-$ tar xvjf $CROSS_BOOTSTRAPPED_RUSTC_TARBALL
-$ rm $CROSS_BOOTSTRAPPED_RUSTC_TARBALL
-$ cd .. && systemd-nspawn
-> export PATH=$PATH:/root/bin
-> export LD_LIBRARY_PATH=$PATH:/root/lib
-> rustc -v
-> apt-get update && apt-get -qq install wget
-> wget https://raw.githubusercontent.com/japaric/ruststrap/master/make-stage0.sh
-> chmod +x make-stage0.sh
-> ./make-stage0.sh $SNAPSHOT_REV
-> logout
-```
-
-The final product (stage-0 tarball) will be located at:
-
-`/mnt/debian/root/toolchains/src/rust/build`
+None of this would have been possible without Riad Wahby's blog post:
+["Cross bootstrapping Rust"][blog].
 
 # License
 
@@ -141,4 +64,9 @@ ruststrap (i.e. the script and patches) is licensed under the MIT license.
 See LICENSE-MIT for more details.
 
 [blog]: http://github.jfet.org/Rust_cross_bootstrapping.html
-[nightlies]: http://ftp.floorchan.org/mirror/stages/rust/
+[build-cargo]: /build-cargo.sh
+[cargo]: http://ftp.floorchan.org/mirror/stages/cargo/
+[rust]: http://ftp.floorchan.org/mirror/stages/rust/
+[ruststrap]: /ruststrap.sh
+[test-cargo]: https://github.com/japaric/ruststrap/issues/10
+[test-rust]: https://github.com/japaric/ruststrap/issues/5
