@@ -10,7 +10,7 @@
 set -e
 set -x
 
-SRC_DIR="`pwd`/rust"
+: ${SRC_DIR:=/rust}
 
 # Make sure timezone is UTC (just like bors)
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
