@@ -10,14 +10,16 @@
 set -e
 set -x
 
+SRC_DIR="`pwd`/rust"
+
 # Make sure timezone is UTC (just like bors)
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 # Fetch Rust (or update existing repository)
 apt-get update -qq
 apt-get install -qq git
-git clone --recursive https://github.com/rust-lang/rust && cd rust || \
-  cd rust && git pull
+git clone --recursive https://github.com/rust-lang/rust "$SRC_DIR" && cd "$SRC_DIR" || \
+  cd "$SRC_DIR" && git pull
 
 # Optionally checkout older commit
 if [ ! -z $1  ]; then
@@ -46,8 +48,8 @@ cd x86_64-unknown-linux-gnu
 find . -type d -exec mkdir -p ../arm-unknown-linux-gnueabihf/\{\} \;
 
 # Building cross LLVM
-cd /rust/build/x86_64-unknown-linux-gnu/llvm
-/rust/src/llvm/configure \
+cd "$SRC_DIR"/build/x86_64-unknown-linux-gnu/llvm
+"$SRC_DIR"/src/llvm/configure \
     --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
     --enable-assertions \
@@ -61,8 +63,8 @@ cd /rust/build/x86_64-unknown-linux-gnu/llvm
     --host=x86_64-unknown-linux-gnu \
     --target=x86_64-unknown-linux-gnu
 make -j$(nproc)
-cd /rust/build/arm-unknown-linux-gnueabihf/llvm
-/rust/src/llvm/configure \
+cd "$SRC_DIR"/build/arm-unknown-linux-gnueabihf/llvm
+"$SRC_DIR"/src/llvm/configure \
     --enable-targets=x86,x86_64,arm,mips \
     --enable-optimized \
     --enable-assertions \
@@ -78,23 +80,23 @@ cd /rust/build/arm-unknown-linux-gnueabihf/llvm
 make -j$(nproc)
 
 # Enable llvm-config for the cross build
-cd /rust/build/arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin
+cd "$SRC_DIR"/build/arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin
 mv llvm-config llvm-config-arm
 ln -s ../../BuildTools/Release+Asserts/bin/llvm-config
 ./llvm-config --cxxflags
 
 # Making Rust Build System use our LLVM build
-cd /rust/build/
+cd "$SRC_DIR"/build/
 chmod 0644 config.mk
 grep 'CFG_LLVM_[BI]' config.mk |                                          \
     sed 's/x86_64\(.\)unknown.linux.gnu/arm\1unknown\1linux\1gnueabihf/g' \
     >> config.mk
 
-cd /rust
+cd "$SRC_DIR"
 sed -i.bak 's/\([\t]*\)\(.*\$(MAKE).*\)/\1#\2/' mk/llvm.mk
 
 # Building a working librustc for the cross architecture
-cd /rust
+cd "$SRC_DIR"
 sed -i.bak \
     's/^CRATES := .*/TARGET_CRATES += $(HOST_CRATES)\nCRATES := $(TARGET_CRATES)/' \
     mk/crates.mk
@@ -103,10 +105,10 @@ sed -i.bak \
     mk/main.mk
 sed -i.bak 's/foreach host,$(CFG_HOST)/foreach host,$(CFG_TARGET)/' mk/rustllvm.mk
 
-cd /rust
+cd "$SRC_DIR"
 sed -i.bak 's/.*target_arch = .*//' src/etc/mklldeps.py
 
-cd /rust/build
+cd "$SRC_DIR"/build
 arm-unknown-linux-gnueabihf/llvm/Release+Asserts/bin/llvm-config --libs \
     | tr '-' '\n' | sort > arm
 x86_64-unknown-linux-gnu/llvm/Release+Asserts/bin/llvm-config --libs \
@@ -114,11 +116,11 @@ x86_64-unknown-linux-gnu/llvm/Release+Asserts/bin/llvm-config --libs \
 diff arm x86 >/dev/null
 
 # Build it, part 1
-cd /rust/build
+cd "$SRC_DIR"/build
 make -j$(nproc)
 
 # Build it, part 2
-cd /rust/build
+cd "$SRC_DIR"/build
 LD_LIBRARY_PATH=$PWD/x86_64-unknown-linux-gnu/stage2/lib/rustlib/x86_64-unknown-linux-gnu/lib:$LD_LIBRARY_PATH \
     ./x86_64-unknown-linux-gnu/stage2/bin/rustc --cfg stage2 -O --cfg rtopt                                    \
     -C linker=arm-linux-gnueabihf-g++ -C ar=arm-linux-gnueabihf-ar -C target-feature=+v6,+vfp2                 \
@@ -135,7 +137,7 @@ LD_LIBRARY_PATH=$PWD/x86_64-unknown-linux-gnu/stage2/lib/rustlib/x86_64-unknown-
 # Ship it
 mkdir -p /dist/lib/rustlib/arm-unknown-linux-gnueabihf
 cd /dist
-cp -R /rust/build/x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/* \
+cp -R "$SRC_DIR"/build/x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/* \
     lib/rustlib/arm-unknown-linux-gnueabihf
 mv lib/rustlib/arm-unknown-linux-gnueabihf/bin .
 cd lib
