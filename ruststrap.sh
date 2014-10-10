@@ -11,6 +11,7 @@ set -e
 set -x
 
 : ${SRC_DIR:=/rust}
+: ${DIST_DIR:=/dist}
 
 # Make sure timezone is UTC (just like bors)
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
@@ -135,8 +136,8 @@ LD_LIBRARY_PATH=$PWD/x86_64-unknown-linux-gnu/stage2/lib/rustlib/x86_64-unknown-
     $PWD/../src/driver/driver.rs
 
 # Ship it
-mkdir -p /dist/lib/rustlib/arm-unknown-linux-gnueabihf
-cd /dist
+mkdir -p "$DIST_DIR"/lib/rustlib/arm-unknown-linux-gnueabihf
+cd "$DIST_DIR"
 cp -R "$SRC_DIR"/build/x86_64-unknown-linux-gnu/stage2/lib/rustlib/arm-unknown-linux-gnueabihf/* \
     lib/rustlib/arm-unknown-linux-gnueabihf
 mv lib/rustlib/arm-unknown-linux-gnueabihf/bin .
