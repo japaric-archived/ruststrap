@@ -98,6 +98,7 @@ grep 'CFG_LLVM_[BI]' config.mk |                                          \
 
 cd "$SRC_DIR"
 sed -i.bak 's/\([\t]*\)\(.*\$(MAKE).*\)/\1#\2/' mk/llvm.mk
+sed -i.bak 's/^\(CROSS_PREFIX_'${TARGET}'=\)\(.*\)-$/\1'${TOOLCHAIN_TARGET}'-/' mk/platform.mk
 
 # Building a working librustc for the cross architecture
 cd "$SRC_DIR"
