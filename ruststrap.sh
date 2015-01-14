@@ -53,7 +53,7 @@ find . -type d -exec mkdir -p ../${TARGET}/\{\} \;
 # Building cross LLVM
 cd "$SRC_DIR"/build/x86_64-unknown-linux-gnu/llvm
 "$SRC_DIR"/src/llvm/configure \
-    --enable-targets=x86,x86_64,arm,mips \
+    --enable-targets=x86,x86_64,arm,aarch64,mips \
     --enable-optimized \
     --enable-assertions \
     --disable-docs \
@@ -68,7 +68,7 @@ cd "$SRC_DIR"/build/x86_64-unknown-linux-gnu/llvm
 make -j$(nproc)
 cd "$SRC_DIR"/build/${TARGET}/llvm
 "$SRC_DIR"/src/llvm/configure \
-    --enable-targets=x86,x86_64,arm,mips \
+    --enable-targets=x86,x86_64,arm,aarch64,mips \
     --enable-optimized \
     --enable-assertions \
     --disable-docs \
