@@ -9,7 +9,7 @@ nightlies, see the links below.
 
 # Nightlies (Use at your own risk!)
 
-Nightly archive: [Rust][rust] and [Cargo][cargo]
+Nightly archive: [Rust] and ~~[Cargo]~~
 
 (I plan to host the last three nightlies)
 
@@ -67,8 +67,7 @@ See LICENSE-MIT for more details.
 
 [blog]: http://github.jfet.org/Rust_cross_bootstrapping.html
 [build-cargo]: /build-cargo.sh
-[cargo]: http://ftp.floorchan.org/mirror/stages/cargo/
-[rust]: http://ftp.floorchan.org/mirror/stages/rust/
+[Rust]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AACxFoD1OrxDXURzj5wX0IYUa?dl=0
 [ruststrap]: /ruststrap.sh
 [test-cargo]: https://github.com/japaric/ruststrap/issues/10
 [test-rust]: https://github.com/japaric/ruststrap/issues/5
