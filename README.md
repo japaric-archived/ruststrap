@@ -1,73 +1,44 @@
 # `ruststrap`
 
-Unofficial Rust and Cargo nightlies for `arm-unknown-linux-gnueabihf`
-(Specifically, the nightlies target the armv7l architecture. These nightlies
-*won't* work on armv6 processors like the Raspberry Pi)
+**Unofficial** Rust and Cargo nightlies for `arm-unknown-linux-gnueabihf`.
 
-This repository contains the build scripts. If you are looking for the actual
-nightlies, see the links below.
+This repository contains the build/automation scripts. If you are looking for
+the binaries see the link below.
 
-# Nightlies (Use at your own risk!)
+# [Nightlies]
 
-Nightly archive: [Rust] and ~~[Cargo]~~
+Use at your own risk!
 
-(I plan to host the last three nightlies)
+At the moment, no one is running CI tests for the `arm-unknown-linux-gnueabihf`
+triple, so the nightlies may break, and/or bugs may be introduced on a daily
+basis.
 
-## Installation
+# Installation
 
-Grab the tarball and extract it into `/usr/local`.
+Sorry, no [un]installation scripts, simply unpack the tarballs wherever it
+makes sense to you and update your `$PATH` variable and/or `ld.so.conf` file if
+necessary.
 
-(That's enough for me, since my `/usr/local` is usually empty. If you need a
-more elaborate (un)installation method, feel free to open an issue)
+(FWIW, I usually just unpack the tarballs in my `/usr/local` folder)
 
-## Test matrix
+# Tested devices/OSes
 
-These are the results of smoke testing the nightlies on some devices I have at
-hand:
+Format is $DEVICE $OS ($DATE_OF_LAST_SMOKE_TEST)
 
-| Device/distribution | Debian (sid) | Arch   | Exherbo    |
-| ------------------- | :----------: | :----: | :--------: |
-| Beaglebone          | -            | OK     | -          |
-| Odroid XU           | OK           | OK     | See issues |
+- Odroid XU (ARMv7) in a Raspbian chroot. (today ;-), because I use it to build
+  the nightlies)
+- Odroid XU running Arch. (2015-02-05)
+- Raspberry Pi (ARMv6) running Raspbian. (2015-02-04)
 
-If you smoke test these nightlies in some other device, please send a PR to
-update this table.
+Note: This is list is not comprehensive not regularly updated, but gives you an
+idea of the supported devices and OSes.
 
-Proper testing is WIP and is being tracked in these issues:
-
-- Rust: Running the full test suite: See [#5][test-rust]
-- Cargo: Test suite doesn't pass on the Odroid XU: See [#10][test-cargo]
-
-# Automation
-
-The build process is fully automated. Builds are triggered at the same time the
-official nightlies are built. Therefore both (official and unofficial)
-nightlies should have the same commit hash.
-
-## How is the Rust nightly built?
-
-The Rust compiler + libraries are [cross bootstrapped][ruststrap] on a x86_64
-machine, therefore the test suite is *not* executed.
-
-## How is the Cargo nightly built?
-
-Cargo is [bootstrapped][build-cargo] on an ARM device, and although the test
-suite can be executed, it's currently skipped because is [failing][test-cargo].
-
-# Acknowledgment
-
-None of this would have been possible without Riad Wahby's blog post:
-["Cross bootstrapping Rust"][blog].
+Feel free to send a PR adding your device to the list!
 
 # License
 
-ruststrap (i.e. the script and patches) is licensed under the MIT license.
+All the scripts/patches in this repository are licensed under the MIT license.
 
 See LICENSE-MIT for more details.
 
-[blog]: http://github.jfet.org/Rust_cross_bootstrapping.html
-[build-cargo]: /build-cargo.sh
-[Rust]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AACxFoD1OrxDXURzj5wX0IYUa?dl=0
-[ruststrap]: /ruststrap.sh
-[test-cargo]: https://github.com/japaric/ruststrap/issues/10
-[test-rust]: https://github.com/japaric/ruststrap/issues/5
+[Nightlies]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AACxFoD1OrxDXURzj5wX0IYUa?dl=0
