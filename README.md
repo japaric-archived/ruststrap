@@ -29,6 +29,7 @@ Format is $DEVICE $OS ($DATE_OF_LAST_SMOKE_TEST)
   the nightlies)
 - Odroid XU running Arch. (2015-02-05)
 - Raspberry Pi (ARMv6) running Raspbian. (2015-02-04)
+- Samsung Chromebook 2 running Gentoo. (2015-02-06)
 
 Note: This is list is not comprehensive not regularly updated, but gives you an
 idea of the supported devices and OSes.
