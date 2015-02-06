@@ -25,11 +25,15 @@ RUST_NIGHTLY_DIR=$NIGHTLY_DIR/rust
 
 # update source to match upstream
 cd $CARGO_SRC_DIR
+git checkout .
 git checkout master
 git pull
 
-# Optionally checkout older hash
+# optionally checkout older commit
 git checkout $1
+
+# apply patch to link statically against libssl
+git apply /ruststrap/armhf/static-ssl.patch
 
 # Get information about HEAD
 HEAD_HASH=$(git rev-parse --short HEAD)
@@ -69,6 +73,7 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | tr -s ' ' | cut -d ' ' -f 4
   cd $CARGO_SRC_DIR
   ./configure \
     --disable-verify-install \
+    --enable-nightly \
     --enable-optimize \
     --local-cargo=$CARGO_NIGHTLY_DIR/bin/cargo \
     --local-rust-root=$RUST_NIGHTLY_DIR \

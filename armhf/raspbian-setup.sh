@@ -58,7 +58,8 @@ cd build
 
 ## fetch cargo source
 git clone --recursive https://github.com/rust-lang/cargo $CARGO_SRC_DIR
-apt-get install -qq cmake libcurl4-openssl-dev libssl-dev pkg-config
+apt-get install -qq cmake libssl-dev pkg-config
+#apt-get install -qq cmake libcurl4-openssl-dev libssl-dev pkg-config
 
 ## prepare snap and dist folders
 mkdir -p $DIST_DIR/{cargo,rust};
