@@ -52,7 +52,8 @@ bin/rustc -V
 cd $RUST_SRC_DIR
 HEAD_HASH=$(git rev-parse --short HEAD)
 HEAD_DATE=$(TZ=UTC date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
-TARBALL=rust-${HEAD_DATE}-${HEAD_HASH}-arm-unknown-linux-gnueabihf
+TARBALL=rust-$HEAD_DATE-$HEAD_HASH-arm-unknown-linux-gnueabihf
+LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 
 # build it
 cd build
@@ -87,6 +88,16 @@ for i in $(seq `expr $MAX_NUMBER_OF_NIGHTLIES + 1` $NUMBER_OF_NIGHTLIES); do
   OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
   $DROPBOX delete $OLDEST_NIGHTLY
 done
+
+# run tests
+if [ -z $DONTTEST ]; then
+  cd $RUST_SRC_DIR
+  uname -a > $LOGFILE
+  echo >> $LOGFILE
+  make check >>$LOGFILE 2>&1
+  $DROPBOX -p upload $LOGFILE .
+  rm $LOGFILE
+fi
 
 # cleanup
 cd $SNAP_DIR

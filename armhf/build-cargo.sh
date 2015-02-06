@@ -38,7 +38,8 @@ git apply /ruststrap/armhf/static-ssl.patch
 # Get information about HEAD
 HEAD_HASH=$(git rev-parse --short HEAD)
 HEAD_DATE=$(TZ=UTC date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
-TARBALL=cargo-${HEAD_DATE}-${HEAD_HASH}-arm-unknown-linux-gnueabihf
+TARBALL=cargo-$HEAD_DATE-$HEAD_HASH-arm-unknown-linux-gnueabihf
+LOGFILE=cargo-$HEAD_DATE-$HEAD_HASH.test.output.txt
 
 # XXX It's possible that cargo won't build with the latest cargo nightly, so
 # I should try all the available nightlies. However, I haven't seen that
@@ -103,6 +104,17 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | tr -s ' ' | cut -d ' ' -f 4
     OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
     $DROPBOX delete $OLDEST_NIGHTLY
   done
+
+  # run tests
+  if [ -z $DONTTEST ]; then
+    cd $CARGO_SRC_DIR
+    uname -a > $LOGFILE
+    $RUST_NIGHTLY_DIR/bin/rustc -V >> $LOGFILE
+    echo >> $LOGFILE
+    make test >>$LOGFILE 2>&1
+    $DROPBOX -p upload $LOGFILE .
+    rm $LOGFILE
+  fi
 
   # cleanup
   cd $CARGO_NIGHTLY_DIR
