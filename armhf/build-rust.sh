@@ -91,7 +91,7 @@ done
 
 # run tests
 if [ -z $DONTTEST ]; then
-  cd $RUST_SRC_DIR
+  cd $RUST_SRC_DIR/build
   uname -a > $LOGFILE
   echo >> $LOGFILE
   make check >>$LOGFILE 2>&1
