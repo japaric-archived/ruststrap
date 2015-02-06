@@ -14,7 +14,7 @@ set -e
 
 : ${DIST_DIR:=~/dist}
 : ${DROPBOX:=dropbox_uploader.sh}
-: ${MAX_NUMBER_OF_NIGHTLIES:=5}
+: ${MAX_NUMBER_OF_NIGHTLIES:=7}
 : ${SNAP_DIR:=~/snap}
 : ${SRC_DIR:=~/src}
 
