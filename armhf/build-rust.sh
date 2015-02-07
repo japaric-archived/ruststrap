@@ -55,7 +55,6 @@ LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # build it
 cd build
 ../configure \
-  --disable-docs \
   --enable-ccache \
   --enable-local-rust \
   --local-rust-root=$SNAP_DIR \
