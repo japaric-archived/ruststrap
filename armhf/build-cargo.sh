@@ -7,7 +7,7 @@
 #     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 #     SHELL=/bin/bash \
 #     TERM=$TERM chroot \
-#     /chroot/raspbian /ruststrap/armhf/build-cargo.sh
+#     /chroot/raspbian/cargo /ruststrap/armhf/build-cargo.sh
 
 set -x
 set -e
@@ -18,13 +18,11 @@ set -e
 : ${NIGHTLY_DIR:=~/nightly}
 : ${SRC_DIR:=~/src}
 
-CARGO_DIST_DIR=$DIST_DIR/cargo
 CARGO_NIGHTLY_DIR=$NIGHTLY_DIR/cargo
-CARGO_SRC_DIR=$SRC_DIR/cargo
 RUST_NIGHTLY_DIR=$NIGHTLY_DIR/rust
 
 # update source to match upstream
-cd $CARGO_SRC_DIR
+cd $SRC_DIR
 git checkout .
 git checkout master
 git pull
@@ -47,7 +45,7 @@ LOGFILE=cargo-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # install cargo nightly
 cd $CARGO_NIGHTLY_DIR
 rm -rf *
-CARGO_NIGHTLY=$($DROPBOX list . | grep cargo- | tail -n 1 | tr -s ' ' | cut -d ' ' -f 4)
+CARGO_NIGHTLY=$($DROPBOX list . | grep cargo- | grep tar | tail -n 1 | tr -s ' ' | cut -d ' ' -f 4)
 $DROPBOX -p download $CARGO_NIGHTLY
 tar xzf $CARGO_NIGHTLY
 rm $CARGO_NIGHTLY
@@ -58,7 +56,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUST_NIGHTLY_DIR/lib:$CARGO_NIGHTLY_DIR
 # nightlies available.
 # FIXME the right way to do this would use the date in the src/rustversion.txt
 # file
-for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | tr -s ' ' | cut -d ' ' -f 4 | sort -r); do
+for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | grep tar | tr -s ' ' | cut -d ' ' -f 4 | sort -r); do
   ## install nigthly rust
   cd $RUST_NIGHTLY_DIR
   rm -rf *
@@ -71,7 +69,7 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | tr -s ' ' | cut -d ' ' -f 4
   PATH=$PATH:$RUST_NIGHTLY_DIR/bin $CARGO_NIGHTLY_DIR/bin/cargo -V
 
   ## build it, if compilation fails try the next nightly
-  cd $CARGO_SRC_DIR
+  cd $SRC_DIR
   ./configure \
     --disable-verify-install \
     --enable-nightly \
@@ -83,46 +81,47 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | tr -s ' ' | cut -d ' ' -f 4
   make || continue
 
   ## packgae
-  rm -rf $CARGO_DIST_DIR/*
-  DESTDIR=$CARGO_DIST_DIR make install
-  cd $CARGO_DIST_DIR
+  rm -rf $DIST_DIR/*
+  DESTDIR=$DIST_DIR make install
+  cd $DIST_DIR
   # smoke test the produced cargo nightly
   PATH=$PATH:$RUST_NIGHTLY_DIR/bin LD_LIBRARY_PATH=$LD_LIBRARY_PATH:lib bin/cargo -V
-  tar czf $DIST_DIR/$TARBALL .
-  cd $DIST_DIR
+  tar czf /$TARBALL .
+  cd /
   TARBALL_HASH=$(sha1sum $TARBALL | tr -s ' ' | cut -d ' ' -f 1)
   mv $TARBALL $TARBALL-$TARBALL_HASH.tar.gz
   TARBALL=$TARBALL-$TARBALL_HASH.tar.gz
 
   # ship it
-  $DROPBOX -p upload $TARBALL .
+  if [ -z $DONTSHIP ]; then
+    $DROPBOX -p upload $TARBALL .
+  fi
   rm $TARBALL
 
   # delete older nightlies
-  NUMBER_OF_NIGHTLIES=$($DROPBOX list . | grep cargo- | wc -l)
+  NUMBER_OF_NIGHTLIES=$($DROPBOX list . | grep cargo- | grep tar | wc -l)
   for i in $(seq `expr $MAX_NUMBER_OF_NIGHTLIES + 1` $NUMBER_OF_NIGHTLIES); do
-    OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
+    OLDEST_NIGHTLY=$($DROPBOX list . | grep cargo- | grep tar | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
     $DROPBOX delete $OLDEST_NIGHTLY
   done
 
   # run tests
   if [ -z $DONTTEST ]; then
-    cd $CARGO_SRC_DIR
+    cd $SRC_DIR
     uname -a > $LOGFILE
     $RUST_NIGHTLY_DIR/bin/rustc -V >> $LOGFILE
     echo >> $LOGFILE
-    make test >>$LOGFILE 2>&1
+    RUST_THREADS=1 make test -k >>$LOGFILE 2>&1 || true
     $DROPBOX -p upload $LOGFILE .
     rm $LOGFILE
   fi
 
   # cleanup
-  cd $CARGO_NIGHTLY_DIR
-  rm -rf *
-  cd $RUST_NIGHTLY_DIR
-  rm -rf *
-  cd $CARGO_DIST_DIR
-  rm -rf *
+  rm -rf $CARGO_NIGHTLY_DIR/*
+  rm -rf $DIST_DIR/*
+  rm -rf $RUST_NIGHTLY_DIR/*
 
   exit 0
 done
+
+exit 1

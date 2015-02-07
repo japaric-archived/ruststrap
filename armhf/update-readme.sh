@@ -6,8 +6,8 @@
 #     HOME=/root \
 #     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
 #     SHELL=/bin/bash \
-#     TERM=$TERM chroot \
-#     /chroot/raspbian /ruststrap/armhf/update-readme.sh
+#     TERM=$TERM \
+#     chroot /chroot/raspbian/rust /ruststrap/armhf/update-readme.sh
 
 set -x
 set -e

@@ -3,11 +3,11 @@
 # I run this in Raspbian chroot with the following command:
 #
 # $ env -i \
-#       HOME=/root \
-#       PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-#       SHELL=/bin/bash \
-#       TERM=$TERM chroot \
-#       /chroot/raspbian /ruststrap/armhf/build-snap.sh
+#     HOME=/root \
+#     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+#     SHELL=/bin/bash \
+#     TERM=$TERM \
+#     chroot /chroot/raspbian/rust /ruststrap/armhf/build-snap.sh
 
 set -x
 set -e
@@ -16,10 +16,8 @@ set -e
 : ${SNAP_DIR:=~/snap}
 : ${SRC_DIR:=~/src}
 
-RUST_SRC_DIR=$SRC_DIR/rust
-
 # checkout latest rust
-cd $RUST_SRC_DIR
+cd $SRC_DIR
 git checkout master
 git pull
 git submodule update
@@ -41,7 +39,7 @@ $DROPBOX -p download snapshots/$SNAP_TARBALL
 tar xjf $SNAP_TARBALL --strip-components=1
 
 # build it
-cd $RUST_SRC_DIR
+cd $SRC_DIR
 git checkout $LAST_SNAP_HASH
 cd build
 ../configure \
@@ -63,5 +61,4 @@ $DROPBOX -p upload rust-stage0-* snapshots
 rm rust-stage0-*
 
 # cleanup
-cd $SNAP_DIR
-rm -rf *
+rm -rf $SNAP_DIR/*

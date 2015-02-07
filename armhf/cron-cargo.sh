@@ -11,4 +11,4 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/raspbian /ruststrap/armhf/build-cargo.sh
+  chroot /chroot/raspbian/cargo /ruststrap/armhf/build-cargo.sh

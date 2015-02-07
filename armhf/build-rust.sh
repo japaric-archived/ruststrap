@@ -3,11 +3,11 @@
 # I run this in Raspbian chroot with the following command:
 #
 # $ env -i \
-#       HOME=/root \
-#       PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-#       SHELL=/bin/bash \
-#       TERM=$TERM chroot \
-#       /chroot/raspbian /ruststrap/armhf/build-rust.sh
+#     HOME=/root \
+#     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+#     SHELL=/bin/bash \
+#     TERM=$TERM \
+#     chroot /chroot/raspbian/rust /ruststrap/armhf/build-rust.sh
 
 set -x
 set -e
@@ -18,11 +18,8 @@ set -e
 : ${SNAP_DIR:=~/snap}
 : ${SRC_DIR:=~/src}
 
-RUST_DIST_DIR=$DIST_DIR/rust
-RUST_SRC_DIR=$SRC_DIR/rust
-
 # Update source to upstream
-cd $RUST_SRC_DIR
+cd $SRC_DIR
 git checkout master
 git pull
 
@@ -34,7 +31,7 @@ git submodule update
 SNAP_HASH=$(head -n 1 src/snapshots.txt | tr -s ' ' | cut -d ' ' -f 3)
 
 # Check if the snapshot is available
-SNAP_TARBALL=$($DROPBOX list snapshots | grep $SNAP_HASH)
+SNAP_TARBALL=$($DROPBOX list snapshots | grep $SNAP_HASH | grep tar)
 if [ -z "$SNAP_TARBALL" ]; then
   exit 1
 fi
@@ -49,7 +46,7 @@ rm $SNAP_TARBALL
 bin/rustc -V
 
 # Get information about HEAD
-cd $RUST_SRC_DIR
+cd $SRC_DIR
 HEAD_HASH=$(git rev-parse --short HEAD)
 HEAD_DATE=$(TZ=UTC date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
 TARBALL=rust-$HEAD_DATE-$HEAD_HASH-arm-unknown-linux-gnueabihf
@@ -58,6 +55,7 @@ LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # build it
 cd build
 ../configure \
+  --disable-docs \
   --enable-ccache \
   --enable-local-rust \
   --local-rust-root=$SNAP_DIR \
@@ -69,38 +67,38 @@ make clean
 make -j$(nproc)
 
 # packgae
-rm -rf $RUST_DIST_DIR/*
-DESTDIR=$RUST_DIST_DIR make install -j$(nproc)
-cd $RUST_DIST_DIR
-tar czf $DIST_DIR/$TARBALL .
+rm -rf $DIST_DIR/*
+DESTDIR=$DIST_DIR make install -j$(nproc)
 cd $DIST_DIR
+tar czf /$TARBALL .
+cd /
 TARBALL_HASH=$(sha1sum $TARBALL | tr -s ' ' | cut -d ' ' -f 1)
 mv $TARBALL $TARBALL-$TARBALL_HASH.tar.gz
 TARBALL=$TARBALL-$TARBALL_HASH.tar.gz
 
 # ship it
-$DROPBOX -p upload $TARBALL .
+if [ -z $DONTSHIP ]; then
+  $DROPBOX -p upload $TARBALL .
+fi
 rm $TARBALL
 
 # delete older nightlies
-NUMBER_OF_NIGHTLIES=$($DROPBOX list . | grep rust- | wc -l)
+NUMBER_OF_NIGHTLIES=$($DROPBOX list . | grep rust- | grep tar | wc -l)
 for i in $(seq `expr $MAX_NUMBER_OF_NIGHTLIES + 1` $NUMBER_OF_NIGHTLIES); do
-  OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
+  OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | grep tar | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
   $DROPBOX delete $OLDEST_NIGHTLY
 done
 
 # run tests
 if [ -z $DONTTEST ]; then
-  cd $RUST_SRC_DIR/build
+  cd $SRC_DIR/build
   uname -a > $LOGFILE
   echo >> $LOGFILE
-  make check >>$LOGFILE 2>&1
+  RUST_TEST_TASKS=1 make check -k >>$LOGFILE 2>&1 || true
   $DROPBOX -p upload $LOGFILE .
   rm $LOGFILE
 fi
 
 # cleanup
-cd $SNAP_DIR
-rm -rf *
-cd $RUST_DIST_DIR
-rm -rf *
+rm -rf $DIST_DIR/*
+rm -rf $SNAP_DIR/*
