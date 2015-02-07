@@ -58,3 +58,21 @@ All the bash scripts I use to build these nightlies can be found in the
 following repository:
 
 https://github.com/japaric/ruststrap
+
+# Problems with the nightlies?
+
+If running `rustc` or `cargo` or a binary produced by `rustc` yields one of the
+following messages:
+
+- "Illegal instruction"
+- "rustc: /path/to/libfoo.so.1: version `FOO_1.2.3' not found (required by /path/to/librust_crate-4e7c5e5c.so).`"
+
+Open an issue at:
+
+https://github.com/japaric/ruststrap/issues
+
+Include the full command, its output, and what device and OS you are using
+
+If running some binary produced by these nightlies misbehaves (panics when it
+shouldn't) or produces unexpected output, that probably belongs to the
+rust-lang/rust issue tracker.
