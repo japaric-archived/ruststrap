@@ -33,11 +33,16 @@ git checkout $1
 # apply patch to link statically against libssl
 git apply /ruststrap/armhf/static-ssl.patch
 
-# Get information about HEAD
+# get information about HEAD
 HEAD_HASH=$(git rev-parse --short HEAD)
 HEAD_DATE=$(TZ=UTC date -d @$(git show -s --format=%ct HEAD) +'%Y-%m-%d')
 TARBALL=cargo-$HEAD_DATE-$HEAD_HASH-arm-unknown-linux-gnueabihf
 LOGFILE=cargo-$HEAD_DATE-$HEAD_HASH.test.output.txt
+
+# check if we have build this exact version of cargo
+if [ ! -z "$($DROPBOX list | grep $HEAD_DATE-$HEAD_HASH)" ]; then
+  exit 0
+fi
 
 # XXX It's possible that cargo won't build with the latest cargo nightly, so
 # I should try all the available nightlies. However, I haven't seen that
