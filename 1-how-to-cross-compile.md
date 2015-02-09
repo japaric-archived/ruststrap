@@ -17,7 +17,8 @@ Note: In this how-to I'll use `arm-unknown-linux-gnueabihf` as the target
 triple (the cross compilation target), and `x86_64-unknown-linux-gnu` as the
 host triple (my PC, where everything is compiled). But, it should be possible
 to use different target/host triples with a little tweak of the instructions
-outlined here.
+outlined here. For example, I've used these instruction to cross compile from
+x86_64 to i686 in Linux.
 
 # Cross compiling with rustc
 
@@ -100,8 +101,8 @@ $ tree /usr/local/lib
                 `-- (..)
 ```
 
-(If you are using multirust, your toolchain is installed at
-`~/.multirust/toolchains/nightly`)
+If you are using multirust, your toolchain is installed at:
+`~/.multirust/toolchains/nightly`
 
 ## Cross compiling a static library
 
@@ -142,7 +143,7 @@ It still doesn't work!
 
 What went wrong this time is that `rustc` is using `cc` to link the binary,
 and this doesn't work because `cc` is a symlink to your native compiler
-(`gcc`).
+(`gcc`). (See rust-lang/rust#9328)
 
 The solution is to tell `rustc` to use the right linker:
 
@@ -163,6 +164,12 @@ $ scp hello me@arm:~
 $ ssh me@arm ./hello
 Hello, world!
 ```
+
+Note: If you cross compiling to i686 on a x86_64 PC, then using the native
+compiler (`cc`) is OK, because the native compiler is also a cross compiler for
+i686. But chances are you'll get a different error due to missing 32bit
+libraries (e.g. `ld cannot find crti.o`), you'll need to install the
+`libc-dev:i386` package on Debian/Ubuntu to fix that error.
 
 # Cross compiling with cargo
 
