@@ -184,6 +184,6 @@ linker = "arm-linux-gnueabihf-gcc-4.8"
 $ cargo new --bin hello
 $ cd hello
 $ cargo build --target=arm-unknown-linux-gnueabihf
-$ file target/arm-unknown-linux-gnueabihf
+$ file target/arm-unknown-linux-gnueabihf/hello
 hello: ELF 32-bit LSB  shared object, ARM, EABI5 version 1 (SYSV), (..)
 ```
