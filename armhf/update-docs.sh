@@ -14,4 +14,5 @@ set -e
 
 : ${DROPBOX:=dropbox_uploader.sh}
 
-$DROPBOX -p upload /ruststrap/DO_NOT_README.md README!.txt
+$DROPBOX -p upload /ruststrap/0-README.md .
+$DROPBOX -p upload /ruststrap/1-how-to-cross-compile.md 1-how-to-cross-compile.txt
