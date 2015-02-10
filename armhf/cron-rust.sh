@@ -12,7 +12,8 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/raspbian/rust /ruststrap/armhf/build-snap.sh
+  chroot /chroot/raspbian/rust \
+  su -c /ruststrap/armhf/build-snap.sh rustbuild
 
 # build rust nightly
 env -i \
@@ -20,4 +21,5 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/raspbian/rust /ruststrap/armhf/build-rust.sh $1
+  chroot /chroot/raspbian/rust \
+  su -c "/ruststrap/armhf/build-rust.sh $1" rustbuild
