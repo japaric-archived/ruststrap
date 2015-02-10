@@ -11,4 +11,5 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/raspbian/rust /ruststrap/armhf/update-docs.sh
+  chroot /chroot/raspbian/rust \
+  su -c /ruststrap/armhf/update-docs.sh rustbuild
