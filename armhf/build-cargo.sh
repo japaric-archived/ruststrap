@@ -91,8 +91,8 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | grep tar | tr -s ' ' | cut 
   cd $DIST_DIR
   # smoke test the produced cargo nightly
   PATH=$PATH:$RUST_NIGHTLY_DIR/bin LD_LIBRARY_PATH=$LD_LIBRARY_PATH:lib bin/cargo -V
-  tar czf /$TARBALL .
-  cd /
+  tar czf ~/$TARBALL .
+  cd ~
   TARBALL_HASH=$(sha1sum $TARBALL | tr -s ' ' | cut -d ' ' -f 1)
   mv $TARBALL $TARBALL-$TARBALL_HASH.tar.gz
   TARBALL=$TARBALL-$TARBALL_HASH.tar.gz

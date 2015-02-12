@@ -69,8 +69,8 @@ make -j$(nproc)
 rm -rf $DIST_DIR/*
 DESTDIR=$DIST_DIR make install -j$(nproc)
 cd $DIST_DIR
-tar czf /$TARBALL .
-cd /
+tar czf ~/$TARBALL .
+cd ~
 TARBALL_HASH=$(sha1sum $TARBALL | tr -s ' ' | cut -d ' ' -f 1)
 mv $TARBALL $TARBALL-$TARBALL_HASH.tar.gz
 TARBALL=$TARBALL-$TARBALL_HASH.tar.gz
