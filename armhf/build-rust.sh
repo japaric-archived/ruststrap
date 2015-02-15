@@ -86,6 +86,8 @@ NUMBER_OF_NIGHTLIES=$($DROPBOX list . | grep rust- | grep tar | wc -l)
 for i in $(seq `expr $MAX_NUMBER_OF_NIGHTLIES + 1` $NUMBER_OF_NIGHTLIES); do
   OLDEST_NIGHTLY=$($DROPBOX list . | grep rust- | grep tar | head -n 1 | tr -s ' ' | cut -d ' ' -f 4)
   $DROPBOX delete $OLDEST_NIGHTLY
+  OLDEST_TEST_OUTPUT=$(echo $OLDEST_NIGHTLY | cut -d '-' -f 1-5).test.output.txt
+  $DROPBOX delete $OLDEST_TEST_OUTPUT || true
 done
 
 # run tests
