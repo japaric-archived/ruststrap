@@ -116,7 +116,7 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | grep tar | tr -s ' ' | cut 
     uname -a > $LOGFILE
     $RUST_NIGHTLY_DIR/bin/rustc -V >> $LOGFILE
     echo >> $LOGFILE
-    RUST_THREADS=2 make test -k >>$LOGFILE 2>&1 || true
+    RUST_THREADS=1 make test -k >>$LOGFILE 2>&1 || true
     $DROPBOX -p upload $LOGFILE .
     rm $LOGFILE
   fi
