@@ -29,6 +29,7 @@ git pull
 
 # optionally checkout older commit
 git checkout $1
+git submodule update
 
 # apply patch to link statically against libssl
 git apply /ruststrap/armhf/static-ssl.patch
