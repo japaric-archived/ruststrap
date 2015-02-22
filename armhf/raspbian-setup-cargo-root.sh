@@ -18,7 +18,7 @@
 #     TERM=$TERM \
 #     SHELL=/bin/bash \
 #     chroot /chroot/raspbian/cargo \
-#     /ruststrap/armhf/raspbian-setup-cargo.sh
+#     /ruststrap/armhf/raspbian-setup-cargo-root.sh
 #
 
 set -x

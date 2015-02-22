@@ -18,7 +18,7 @@
 #     TERM=$TERM \
 #     SHELL=/bin/bash \
 #     chroot /chroot/raspbian/rust \
-#     /ruststrap/armhf/raspbian-setup-rust.sh
+#     /ruststrap/armhf/raspbian-setup-rust-root.sh
 #
 
 set -x

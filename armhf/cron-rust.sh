@@ -6,15 +6,6 @@
 set -x
 set -e
 
-# build snapshot (if necessary)
-env -i \
-  HOME=/root \
-  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-  SHELL=/bin/bash \
-  TERM=$TERM \
-  chroot /chroot/raspbian/rust \
-  su -c /ruststrap/armhf/build-snap.sh rustbuild
-
 # build rust nightly
 env -i \
   HOME=/root \
