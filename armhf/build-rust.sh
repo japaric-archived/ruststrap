@@ -63,11 +63,11 @@ cd build
   --host=arm-unknown-linux-gnueabihf \
   --target=arm-unknown-linux-gnueabihf
 make clean
-make -j$(nproc)
+make
 
 # packgae
 rm -rf $DIST_DIR/*
-DESTDIR=$DIST_DIR make install -j$(nproc)
+DESTDIR=$DIST_DIR make install
 cd $DIST_DIR
 tar czf ~/$TARBALL .
 cd ~

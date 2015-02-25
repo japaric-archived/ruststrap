@@ -53,7 +53,7 @@ cd build
   --host=arm-unknown-linux-gnueabihf \
   --target=arm-unknown-linux-gnueabihf
 make clean
-make -j$(nproc)
+make
 make snap-stage3-H-arm-unknown-linux-gnueabihf
 
 # ship it
