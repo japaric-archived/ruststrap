@@ -69,7 +69,7 @@ You can cross compile the ARM version of `std` and friends from Rust's source
 code, you just need to pass an extra flag to the `configure` script:
 
 ```
-$ ./configure --target=arm-unkonwn-linux-gnueabihf,x86_64-unknown-linux-gnu
+$ ./configure --target=arm-unknown-linux-gnueabihf,x86_64-unknown-linux-gnu
 $ make -j$(nproc)
 $ sudo make install
 ```
