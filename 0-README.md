@@ -45,8 +45,8 @@ THE SOFTWARE.
 
 # Source code and licenses
 
-Rust: https://github.com/rust-lang/cargo
-Cargo: https://github.com/rust-lang/rust
+Rust: https://github.com/rust-lang/rust
+Cargo: https://github.com/rust-lang/cargo
 
 Both Rust and Cargo are licensed under the MIT license and the Apache license
 (version 2.0), for the exact terms and conditions check their respective
