@@ -27,11 +27,30 @@ Note: The format is $DEVICE + $OS @ $DATE_OF_LAST_SMOKE_TEST
 
 # Installation
 
-Sorry, no [un]installation scripts, simply unpack the tarballs wherever it
-makes sense to you and update your `$PATH` variable and/or `ld.so.conf` file if
-necessary.
+I recommend using multirust:
 
-(FWIW, I usually just unpack the tarballs in my `/usr/local` folder)
+https://github.com/brson/multirust
+
+$ curl -sf https://raw.githubusercontent.com/brson/multirust/master/blastoff.sh | sh
+
+$ cd /path/to/empty/folder
+
+$ wget $CARGO_TARBALL
+
+$ wget $RUST_TARBALL
+
+$ tar xf $CARGO_TARBALL && rm $CARGO_TARBALL
+
+$ tar xf $RUST_TARBALL && rm $RUST_TARBALL
+
+$ multirust update unofficial-nightly --copy-local .
+
+(^ or you could use --link-local)
+
+$ multirust default unofficial-nightly
+
+Alternatively, you could just extract the tarballs wherever and update your
+`$PATH` variable and/or `ld.so.conf` file if necessary.
 
 # Disclaimer
 
