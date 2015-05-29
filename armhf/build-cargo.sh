@@ -86,7 +86,7 @@ for RUST_NIGHTLY in $($DROPBOX list . | grep rust- | grep tar | tr -s ' ' | cut 
   make clean
   make || continue
 
-  ## packgae
+  ## package
   rm -rf $DIST_DIR/*
   DESTDIR=$DIST_DIR make install
   cd $DIST_DIR

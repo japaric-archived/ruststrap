@@ -65,7 +65,7 @@ cd build
 make clean
 make
 
-# packgae
+# package
 rm -rf $DIST_DIR/*
 DESTDIR=$DIST_DIR make install
 cd $DIST_DIR
