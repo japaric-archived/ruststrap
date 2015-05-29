@@ -55,19 +55,21 @@ LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # build it
 cd build
 ../configure \
+  --disable-valgrind \
   --enable-ccache \
   --enable-local-rust \
+  --enable-llvm-static-stdcpp \
   --local-rust-root=$SNAP_DIR \
   --prefix=/ \
   --build=arm-unknown-linux-gnueabihf \
   --host=arm-unknown-linux-gnueabihf \
   --target=arm-unknown-linux-gnueabihf
 make clean
-make
+make -j$(nproc)
 
 # package
 rm -rf $DIST_DIR/*
-DESTDIR=$DIST_DIR make install
+DESTDIR=$DIST_DIR make install -j$(nproc)
 cd $DIST_DIR
 tar czf ~/$TARBALL .
 cd ~
@@ -95,7 +97,7 @@ if [ -z $DONTTEST ]; then
   cd $SRC_DIR/build
   uname -a > $LOGFILE
   echo >> $LOGFILE
-  RUST_TEST_TASKS=1 make check -k >>$LOGFILE 2>&1 || true
+  RUST_TEST_THREADS=1 make check -k >>$LOGFILE 2>&1 || true
   $DROPBOX -p upload $LOGFILE .
   rm $LOGFILE
 fi
