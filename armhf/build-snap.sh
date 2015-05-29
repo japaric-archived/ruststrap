@@ -45,6 +45,7 @@ cd build
 ../configure \
   --disable-docs \
   --disable-inject-std-version \
+  --disable-valgrind \
   --enable-ccache \
   --enable-llvm-static-stdcpp \
   --enable-local-rust \
