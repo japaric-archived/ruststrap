@@ -5,7 +5,7 @@
 This repository contains the build scripts. If you are looking for the binaries
 see the link below.
 
-# [1.0.0-beta]
+# [1.0.0]
 
 # [Nightlies]
 
@@ -17,5 +17,5 @@ All the scripts/patches in this repository are licensed under the MIT license.
 
 See LICENSE-MIT for more details.
 
+[1.0.0]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AAB-bhnmUMG8ihNPcrz5twRYa/1.0.0?dl=0
 [Nightlies]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AACxFoD1OrxDXURzj5wX0IYUa?dl=0
-[1.0.0-beta]: https://www.dropbox.com/sh/qfbt03ys2qkhsxs/AAAz65QBvs0Od9Y7It8QVsiMa/1.0.0-beta/rust-1.0.0-beta-arm-unknown-linux-gnueabihf-e4f2e2730200645934a328821f7de35152bad374.tar.gz?dl=1
