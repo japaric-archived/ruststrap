@@ -18,10 +18,12 @@ doesn't work. (Last time I checked 99% of the crate unit tests passed though).
 Not comprehensive and likely outdated list of devices that have passed some
 form of smoke test.
 
-Note: The format is $DEVICE + $OS @ $DATE_OF_LAST_SMOKE_TEST
+Note: The format is $DEVICE + $DATE @ $DATE_OF_LAST_SMOKE_TEST
 
-- Odroid XU (ARMv7 SBC) + Raspbian @ hopefully today (this is the build bot)
-- Odroid XU + Arch @ 2015-02-05
+- Odroid XU (ARMv7 SBC) + Raspbian @ today(this is the cargo build bot)
+- Odroid XU (ARMv7 SBC) + Wheezy @ today (this is the rust build bot)
+- Odroid XU (ARMv7 SBC) + Arch @ 2015-05-30
+- Beaglebone (ARMv7 SBC) + Arch @ 2015-05-30
 - Raspberry Pi (ARMv6 SBC) + Raspbian @ 2015-02-04
 - Samsung Chromebook 2 (ARMv7 Laptop) + Gentoo @ 2015-02-06
 
@@ -65,6 +67,7 @@ THE SOFTWARE.
 # Source code and licenses
 
 Rust: https://github.com/rust-lang/rust
+
 Cargo: https://github.com/rust-lang/cargo
 
 Both Rust and Cargo are licensed under the MIT license and the Apache license
@@ -90,7 +93,7 @@ Open an issue at:
 
 https://github.com/japaric/ruststrap/issues
 
-Include the full command, its output, and what device and OS you are using
+Include the full command, its output, and what device and distro you are using
 
 If running some binary produced by these nightlies misbehaves (panics when it
 shouldn't) or produces unexpected output, that probably belongs to the
