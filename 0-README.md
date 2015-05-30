@@ -18,9 +18,9 @@ doesn't work. (Last time I checked 99% of the crate unit tests passed though).
 Not comprehensive and likely outdated list of devices that have passed some
 form of smoke test.
 
-Note: The format is $DEVICE + $DATE @ $DATE_OF_LAST_SMOKE_TEST
+Note: The format is $DEVICE + $DISTRO @ $DATE_OF_LAST_SMOKE_TEST
 
-- Odroid XU (ARMv7 SBC) + Raspbian @ today(this is the cargo build bot)
+- Odroid XU (ARMv7 SBC) + Raspbian @ today (this is the cargo build bot)
 - Odroid XU (ARMv7 SBC) + Wheezy @ today (this is the rust build bot)
 - Odroid XU (ARMv7 SBC) + Arch @ 2015-05-30
 - Beaglebone (ARMv7 SBC) + Arch @ 2015-05-30
