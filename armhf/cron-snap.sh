@@ -12,5 +12,5 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/raspbian/snap \
+  chroot /chroot/wheezy/snap \
   su -c /ruststrap/armhf/build-snap.sh rustbuild
