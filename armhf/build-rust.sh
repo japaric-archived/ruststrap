@@ -97,7 +97,7 @@ if [ -z $DONTTEST ]; then
   cd $SRC_DIR/build
   uname -a > $LOGFILE
   echo >> $LOGFILE
-  RUST_TEST_THREADS=1 make check -k >>$LOGFILE 2>&1 || true
+  RUST_TEST_THREADS=1 timeout 7200 make check -k >>$LOGFILE 2>&1 || true
   $DROPBOX -p upload $LOGFILE .
   rm $LOGFILE
 fi
