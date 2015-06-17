@@ -65,7 +65,7 @@ cd build
   --host=arm-unknown-linux-gnueabihf \
   --target=arm-unknown-linux-gnueabihf
 make clean
-make -j$(nproc)
+make
 
 # package
 rm -rf $DIST_DIR/*

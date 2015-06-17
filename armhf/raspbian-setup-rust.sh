@@ -3,7 +3,7 @@
 # sets up a raspbian rootfs for rust builds (part II)
 
 #
-# run this script in freshly debootstrapped Raspbian rootfs
+# run this script in a raspbian-2015-05-05 rootfs
 #
 # $ env -i \
 #     HOME=/root \

@@ -3,9 +3,7 @@
 # sets up a raspbian rootfs for cargo builds (part I)
 
 #
-# run this script in freshly debootstrapped Raspbian rootfs
-#
-# $ debootstrap --arch=armhf wheezy /chroot/raspbian/cargo http://mirrordirector.raspbian.org/raspbian
+# run this script in a raspbian-2015-05-05 rootfs
 #
 # # systemd-nspawn doesn't work, do a "manual" chroot
 # $ mount -o rbind /dev /chroot/raspbian/cargo/dev
@@ -26,8 +24,8 @@ set -e
 
 ## install g++
 apt-get update -qq
-apt-get install -qq build-essential g++-4.7
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7
+apt-get install -qq build-essential g++-4.8
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
 
 ## install dropbox_uploader.sh
 apt-get install -qq curl git
