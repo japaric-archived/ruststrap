@@ -119,7 +119,7 @@ pub fn hello() {
 ```
 
 ```
-$ rustc --target=arm-uknown-linux-gnueabihf lib.rs && ls lib*
+$ rustc --target=arm-unknown-linux-gnueabihf lib.rs && ls lib*
 liblib.rlib
 ```
 
