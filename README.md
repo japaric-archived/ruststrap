@@ -1,6 +1,7 @@
 # `ruststrap`
 
-**Unofficial** Rust and Cargo nightlies for `arm-unknown-linux-gnueabihf`.
+**Unofficial** Rust and Cargo stable/beta/nightly binaries for
+`arm-unknown-linux-gnueabihf`.
 
 This repository contains the build scripts. If you are looking for the binaries
 see the link below.
