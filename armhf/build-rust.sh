@@ -19,6 +19,12 @@ set -e
 : ${SNAP_DIR:=~/snap}
 : ${SRC_DIR:=~/src}
 
+case $CHANNEL in
+    beta | stable ) CHANNEL=--release-channel=$CHANNEL;;
+    nightly) CHANNEL=;;
+    *) echo "unknown release channel: $CHANNEL" && exit 1;;
+esac
+
 # Update source to upstream
 cd $SRC_DIR
 git checkout master
@@ -56,7 +62,7 @@ LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # build it
 cd build
 ../configure \
-  --release-channel=$CHANNEL \
+  $CHANNEL \
   --disable-valgrind \
   --enable-ccache \
   --enable-local-rust \
