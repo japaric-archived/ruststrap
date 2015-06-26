@@ -12,6 +12,7 @@
 set -x
 set -e
 
+: ${CHANNEL:=nightly}
 : ${DIST_DIR:=~/dist}
 : ${DROPBOX:=dropbox_uploader.sh}
 : ${MAX_NUMBER_OF_NIGHTLIES:=10}
@@ -55,6 +56,7 @@ LOGFILE=rust-$HEAD_DATE-$HEAD_HASH.test.output.txt
 # build it
 cd build
 ../configure \
+  --release-channel=$CHANNEL \
   --disable-valgrind \
   --enable-ccache \
   --enable-local-rust \
