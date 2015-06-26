@@ -12,5 +12,5 @@ env -i \
   PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
   SHELL=/bin/bash \
   TERM=$TERM \
-  chroot /chroot/wheezy/rust \
+  chroot /chroot/raspbian/rust \
   su -c "/ruststrap/armhf/build-rust.sh $1" rustbuild
