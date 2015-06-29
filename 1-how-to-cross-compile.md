@@ -169,7 +169,7 @@ Note: If you cross compiling to i686 on a x86_64 PC, then using the native
 compiler (`cc`) is OK, because the native compiler is also a cross compiler for
 i686. But chances are you'll get a different error due to missing 32bit
 libraries (e.g. `ld cannot find crti.o`), you'll need to install the
-`libc-dev:i386` package on Debian/Ubuntu to fix that error.
+`libc6-dev-i386` package (Debian/Ubuntu) or equivalent to fix that error.
 
 # Cross compiling with cargo
 
