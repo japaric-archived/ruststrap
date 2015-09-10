@@ -1,3 +1,8 @@
+**PSA** I'm no longer building nightly binaries, but @warricksothr has pick up the mantle (kudos to
+them!). You can find their binaries [here].
+
+[here]: https://github.com/warricksothr/RustBuild
+
 # `ruststrap`
 
 **Unofficial** Rust and Cargo stable/beta/nightly binaries for
