@@ -1,7 +1,23 @@
-**PSA** I'm no longer building nightly binaries, but @warricksothr has pick up the mantle (kudos to
-them!). You can find their binaries [here].
+# Status
 
-[here]: https://github.com/warricksothr/RustBuild
+This project has been effectively **SUPERSEDED** by @warricksothr's [RustBuild] as I'm no longer
+building nightly binaries. This project won't receive further updates or bug fixes.
+
+[RustBuild]: https://github.com/warricksothr/RustBuild
+
+If you are looking for nightly Rust and Cargo builds to natively compile Rust programs **on** an
+ARM device, then check the [RustBuild] project I mentioned above.
+
+If you are just looking for cross compiled crates to cross compile to ARM, then you can use the
+[official builds]. If you want information on how to cross compile, check my extensive cross
+compilation guide: [rust-cross].
+
+[official builds]: http://static.rust-lang.org/dist/
+[rust-cross]: https://github.com/japaric/rust-cross
+
+-- @japaric 2016/02/05
+
+---
 
 # `ruststrap`
 
