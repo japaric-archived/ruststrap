@@ -1,3 +1,19 @@
+# Hello, friend
+
+Did Google bring you here? Anyways, I'd like to inform you that this document is **DEPRECATED**,
+that doesn't mean that this information *is* wrong, but it *could* be; it means that this document
+won't receive updates or fixes in the case it has wrong information.
+
+And, I'd like to point you to my new cross compilation guide: [rust-cross]. It's way more extensive
+than this document, contains several updates about recent and future improvements in tooling, and,
+most importantly, it's being maintained.
+
+[rust-cross]: https://github.com/japaric/rust-cross
+
+-- @japaric, 2016/02/05
+
+---
+
 You can see this document rendered at:
 
 https://github.com/japaric/ruststrap/blob/master/1-how-to-cross-compile.md
